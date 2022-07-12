@@ -17,21 +17,21 @@ for host in $node_hostnames
 do
     ip=$(getent ahosts "${host}" | awk '{ print $1 }' | head -n1)
     node="${ip}:${port}"
-	#echo $node
-	if [ -z "$peers" ];then
-		peers=$node
-	else
-		peers=$peers","$node
-	fi
+    #echo $node
+    if [ -z "$peers" ];then
+        peers=$node
+    else
+        peers=$peers","$node
+    fi
 
-	if [ "$node" == "$self_node" ];then
-		continue
-	fi
-	if [ -z "$exclude_peers" ];then
-		exclude_peers=$node
-	else
-		exclude_peers=$exclude_peers","$node
-	fi
+    if [ "$node" == "$self_node" ];then
+        continue
+    fi
+    if [ -z "$exclude_peers" ];then
+        exclude_peers=$node
+    else
+        exclude_peers=$exclude_peers","$node
+    fi
 done
 
 echo "Peers: $peers"
@@ -45,39 +45,59 @@ if [ $# -ne 1 ];then
     help
 fi
 
+use_coverage=0
+if command -v coverage-server &> /dev/null; then
+    echo "Running with coverage-server"
+    use_coverage=1
+fi
+
+
 case $1 in
     boot)
         echo "boot atomic_server ${self_node}"
-	killall -9 atomic_server || true
+        killall -9 atomic_server coverage-server || true
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
-        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-	sleep 1
-	braft_cli reset_peer --group=Atomic --peer="${self_node}" --new_peers="${peers}"
+        
+        if [[ $use_coverage -eq 1 ]]; then
+            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        else 
+            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        fi
+    sleep 1
+    braft_cli reset_peer --group=Atomic --peer="${self_node}" --new_peers="${peers}"
         ;;
     start)
         echo "start atomic_server ${self_node}"
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
-        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        if [[ $use_coverage -eq 1 ]]; then
+            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        else
+            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        fi
         ;;
     stop)
         echo "stop atomic_server ${self_node}"
-        killall -9 atomic_server || true
+        killall -9 atomic_server coverage-server || true
         ;;
     restart)
         echo "restart atomic_server ${self_node}"
-        killall -9 atomic_server || true
+        killall -9 atomic_server coverage-server || true
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
-        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        if [[ $use_coverage -eq 1 ]]; then
+            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        else
+            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+        fi
         ;;
     join)
-        echo "restart atomic_server ${self_node}"
-	braft_cli add_peer --group=Atomic --peer="${self_node}" --conf="${exclude_peers}"
+        echo "join atomic_server ${self_node}"
+        braft_cli add_peer --group=Atomic --peer="${self_node}" --conf="${exclude_peers}"
         ;;
     leave)
-        echo "restart atomic_server ${self_node}"
-	braft_cli remove_peer --group=Atomic --peer="${self_node}" --conf="${peers}"
+        echo "leave atomic_server ${self_node}"
+        braft_cli remove_peer --group=Atomic --peer="${self_node}" --conf="${peers}"
         ;;
     *)
         help
