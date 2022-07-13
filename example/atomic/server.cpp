@@ -131,8 +131,11 @@ public:
         node_options.snapshot_uri = prefix + "/snapshot";
         node_options.disable_cli = FLAGS_disable_cli;
         braft::Node* node = new braft::Node(FLAGS_group, braft::PeerId(addr));
+
         instrumentation::InstrumentedState *is = new instrumentation::InstrumentedState(node);
-        // DS_STATE_SAVING(is->st.current_term, sizeof(*is->st.current_term));
+        DS_STATE_SAVING((unsigned long long) is->st.node_state, sizeof(*is->st.node_state));
+        DS_STATE_SAVING((unsigned long long) is->st.current_term, sizeof(*is->st.current_term));
+        DS_STATE_SAVING((unsigned long long) is->st.last_log_index, sizeof(*is->st.last_log_index));
         
         if (node->init(node_options) != 0) {
             LOG(ERROR) << "Fail to init raft node";
