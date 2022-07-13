@@ -60,7 +60,7 @@ case $1 in
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         
         if [[ $use_coverage -eq 1 ]]; then
-            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+            /opt/cov-server/cov-server.py 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         else 
             ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         fi
@@ -72,7 +72,7 @@ case $1 in
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         if [[ $use_coverage -eq 1 ]]; then
-            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+            /opt/cov-server/cov-server.py 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         else
             ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         fi
@@ -86,7 +86,7 @@ case $1 in
         killall -9 atomic_server coverage-server || true
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         if [[ $use_coverage -eq 1 ]]; then
-            coverage-server http-serve 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
+            /opt/cov-server/cov-server.py 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         else
             ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
         fi
