@@ -47,7 +47,7 @@ fi
 
 use_coverage=0
 if test -f "/opt/cov-server/cov-server.py"; then
-    echo "Running with coverage-server"
+    echo "Running with cov-server.py"
     use_coverage=1
 fi
 
@@ -55,7 +55,7 @@ fi
 case $1 in
     boot)
         echo "boot atomic_server ${self_node}"
-        killall -9 atomic_server coverage-server || true
+        killall -9 atomic_server cov-server.py || true
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         
@@ -79,11 +79,11 @@ case $1 in
         ;;
     stop)
         echo "stop atomic_server ${self_node}"
-        killall -9 atomic_server coverage-server || true
+        killall -9 atomic_server cov-server.py || true
         ;;
     restart)
         echo "restart atomic_server ${self_node}"
-        killall -9 atomic_server coverage-server || true
+        killall -9 atomic_server cov-server.py || true
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         if [[ $use_coverage -eq 1 ]]; then
              /opt/cov-server/cov-server.py 0.0.0.0:8080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
