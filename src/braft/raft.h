@@ -32,6 +32,10 @@
 
 template <typename T> class scoped_refptr;
 
+namespace instrumentation {
+    class InstrumentedState;
+}
+
 namespace brpc {
 class Server;
 }  // namespace brpc
@@ -617,6 +621,8 @@ inline int NodeOptions::get_catchup_timeout_ms() {
 
 class NodeImpl;
 class Node {
+friend class instrumentation::InstrumentedState;
+
 public:
     Node(const GroupId& group_id, const PeerId& peer_id);
     virtual ~Node();
