@@ -48,7 +48,7 @@ namespace instrumentation {
             struct RelevantState {
                 braft::State *node_state;
                 int64_t *current_term;
-                int64_t *last_log_index;
+                // int64_t *last_log_index;
             };
             
             
@@ -59,7 +59,7 @@ namespace instrumentation {
                 n = _n;
                 st.node_state = &_n->_impl->_state;
                 st.current_term = &_n->_impl->_current_term;
-                st.last_log_index = &_n->_impl->_log_manager->_last_log_index;
+                // st.last_log_index = &_n->_impl->_log_manager->_last_log_index;
             }
     };
 }
@@ -135,7 +135,7 @@ public:
         instrumentation::InstrumentedState *is = new instrumentation::InstrumentedState(node);
         DS_STATE_SAVING((unsigned long long) is->st.node_state, sizeof(*is->st.node_state));
         DS_STATE_SAVING((unsigned long long) is->st.current_term, sizeof(*is->st.current_term));
-        DS_STATE_SAVING((unsigned long long) is->st.last_log_index, sizeof(*is->st.last_log_index));
+        // DS_STATE_SAVING((unsigned long long) is->st.last_log_index, sizeof(*is->st.last_log_index));
         
         if (node->init(node_options) != 0) {
             LOG(ERROR) << "Fail to init raft node";
