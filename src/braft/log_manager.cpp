@@ -25,6 +25,9 @@
 #include "braft/storage.h"                       // LogStorage
 #include "braft/fsm_caller.h"                    // FSMCaller
 
+#include "/opt/instrumentor/llvm_mode/include/afl-rt.h"
+
+
 namespace braft {
 
 DEFINE_int32(raft_leader_batch, 256, "max leader io batch");

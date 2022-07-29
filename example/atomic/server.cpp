@@ -26,6 +26,8 @@
 #include <braft/node.h>
 
 #include "atomic.pb.h"
+#include "/opt/instrumentor/llvm_mode/include/afl-rt.h"
+
 
 DEFINE_bool(allow_absent_key, false, "Cas succeeds if the key is absent while "
                                      " exptected value is exactly 0");
