@@ -46,10 +46,10 @@ if [ $# -ne 1 ];then
 fi
 
 use_coverage=0
-if test -f "/opt/cov-server/cov-server.py"; then
-    echo "Running with cov-server.py"
-    use_coverage=1
-fi
+# if test -f "/opt/cov-server/cov-server.py"; then
+#     echo "Running with cov-server.py"
+#     use_coverage=1
+# fi
 
 
 case $1 in
