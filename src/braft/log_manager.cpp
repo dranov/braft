@@ -25,9 +25,6 @@
 #include "braft/storage.h"                       // LogStorage
 #include "braft/fsm_caller.h"                    // FSMCaller
 
-#include "/opt/instrumentor/llvm_mode/include/afl-rt.h"
-
-
 namespace braft {
 
 DEFINE_int32(raft_leader_batch, 256, "max leader io batch");
@@ -95,7 +92,6 @@ int LogManager::init(const LogManagerOptions &options) {
     }
     _first_log_index = _log_storage->first_log_index();
     _last_log_index = _log_storage->last_log_index();
-    DS_STATE_SAVING((unsigned long long)&_last_log_index, sizeof(_last_log_index));
     _disk_id.index = _last_log_index;
     // Term will be 0 if the node has no logs, and we will correct the value
     // after snapshot load finish.

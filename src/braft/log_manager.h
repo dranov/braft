@@ -29,10 +29,6 @@
 #include "braft/configuration_manager.h"         // ConfigurationManager
 #include "braft/storage.h"                       // Storage
 
-namespace instrumentation {
-    class InstrumentedState;
-}
-
 namespace braft {
 
 class LogStorage;
@@ -58,7 +54,6 @@ struct LogManagerStatus {
 class SnapshotMeta;
 
 class BAIDU_CACHELINE_ALIGNMENT LogManager {
-friend class instrumentation::InstrumentedState;
 
 public:
     typedef int64_t WaitId;

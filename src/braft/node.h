@@ -37,10 +37,6 @@
 #include "braft/configuration_manager.h"
 #include "braft/repeated_timer_task.h"
 
-namespace instrumentation {
-    class InstrumentedState;
-}
-
 namespace braft {
 
 class LogStorage;
@@ -95,7 +91,6 @@ friend class RaftStatImpl;
 friend class FollowerStableClosure;
 friend class ConfigurationChangeDone;
 friend class VoteBallotCtx;
-friend class instrumentation::InstrumentedState;
 
 public:
     NodeImpl(const GroupId& group_id, const PeerId& peer_id);
