@@ -18,6 +18,7 @@
 
 namespace braft {
 
+// INSTRUMENT_FUNC
 int ConfigurationManager::add(const ConfigurationEntry& entry) {
     if (!_configurations.empty()) {
         if (_configurations.back().id.index >= entry.id.index) {
@@ -30,6 +31,7 @@ int ConfigurationManager::add(const ConfigurationEntry& entry) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void ConfigurationManager::truncate_prefix(const int64_t first_index_kept) {
     while (!_configurations.empty()
             && _configurations.front().id.index < first_index_kept) {
@@ -37,6 +39,7 @@ void ConfigurationManager::truncate_prefix(const int64_t first_index_kept) {
     }
 }
 
+// INSTRUMENT_FUNC
 void ConfigurationManager::truncate_suffix(const int64_t last_index_kept) {
     while (!_configurations.empty()
         && _configurations.back().id.index > last_index_kept) {

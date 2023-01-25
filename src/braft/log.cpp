@@ -611,6 +611,7 @@ int Segment::unlink() {
     return ret;
 }
 
+// INSTRUMENT_FUNC
 int Segment::truncate(const int64_t last_index_kept) {
     int64_t truncate_size = 0;
     int64_t first_truncate_in_offset = 0;
@@ -836,6 +837,7 @@ void SegmentLogStorage::pop_segments(
     }
 }
 
+// INSTRUMENT_FUNC
 int SegmentLogStorage::truncate_prefix(const int64_t first_index_kept) {
     // segment files
     if (_first_log_index.load(butil::memory_order_acquire) >= first_index_kept) {
@@ -901,6 +903,7 @@ void SegmentLogStorage::pop_segments_from_back(
     }
 }
 
+// INSTRUMENT_FUNC
 int SegmentLogStorage::truncate_suffix(const int64_t last_index_kept) {
     // segment files
     std::vector<scoped_refptr<Segment> > popped;

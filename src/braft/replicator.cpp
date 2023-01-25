@@ -755,6 +755,7 @@ void Replicator::_wait_more_entries() {
     CHECK_EQ(0, bthread_id_unlock(_id)) << "Fail to unlock " << _id;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_install_snapshot() {
     if (_reader) {
         // follower's readonly mode change may cause two install_snapshot
@@ -1056,6 +1057,7 @@ int Replicator::_transfer_leadership(int64_t log_index) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_cancel_append_entries_rpcs() {
     for (std::deque<FlyingAppendEntriesRpc>::iterator rpc_it =
         _append_entries_in_fly.begin();
@@ -1461,6 +1463,7 @@ int ReplicatorGroup::reset_election_timeout_interval(int new_interval_ms) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 int ReplicatorGroup::transfer_leadership_to(
         const PeerId& peer, int64_t log_index) {
     std::map<PeerId, ReplicatorIdAndStatus>::const_iterator iter = _rmap.find(peer);
@@ -1475,6 +1478,7 @@ int ReplicatorGroup::transfer_leadership_to(
     return Replicator::transfer_leadership(rid, log_index);
 }
 
+// INSTRUMENT_FUNC
 int ReplicatorGroup::stop_transfer_leadership(const PeerId& peer) {
     std::map<PeerId, ReplicatorIdAndStatus>::const_iterator iter = _rmap.find(peer);
     if (iter == _rmap.end()) {

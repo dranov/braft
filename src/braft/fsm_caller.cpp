@@ -208,6 +208,7 @@ void FSMCaller::do_shutdown() {
     }
 }
 
+
 int FSMCaller::on_committed(int64_t committed_index) {
     ApplyTask t;
     t.type = COMMITTED;
@@ -318,6 +319,7 @@ void FSMCaller::do_committed(int64_t committed_index) {
     _log_manager->set_applied_id(last_applied_id);
 }
 
+// INSTRUMENT_FUNC
 int FSMCaller::on_snapshot_save(SaveSnapshotClosure* done) {
     ApplyTask task;
     task.type = SNAPSHOT_SAVE;
@@ -357,6 +359,7 @@ void FSMCaller::do_snapshot_save(SaveSnapshotClosure* done) {
     return;
 }
 
+// INSTRUMENT_FUNC
 int FSMCaller::on_snapshot_load(LoadSnapshotClosure* done) {
     ApplyTask task;
     task.type = SNAPSHOT_LOAD;

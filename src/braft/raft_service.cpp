@@ -113,6 +113,7 @@ void RaftServiceImpl::append_entries(google::protobuf::RpcController* cntl_base,
                                                done_guard.release());
 }
 
+// INSTRUMENT_FUNC
 void RaftServiceImpl::install_snapshot(google::protobuf::RpcController* cntl_base,
                               const InstallSnapshotRequest* request,
                               InstallSnapshotResponse* response,

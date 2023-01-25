@@ -49,6 +49,7 @@ int LocalSnapshotMetaTable::add_file(const std::string& filename,
     return ret.second ? 0 : -1;
 }
 
+// INSTRUMENT_FUNC
 int LocalSnapshotMetaTable::remove_file(const std::string& filename) {
     Map::iterator iter = _file_map.find(filename);
     if (iter == _file_map.end()) {
@@ -233,10 +234,12 @@ int64_t LocalSnapshotWriter::snapshot_index() {
     return _meta_table.has_meta() ? _meta_table.meta().last_included_index() : 0;
 }
 
+// INSTRUMENT_FUNC
 int LocalSnapshotWriter::remove_file(const std::string& filename) {
     return _meta_table.remove_file(filename);
 }
 
+// INSTRUMENT_FUNC
 int LocalSnapshotWriter::add_file(
         const std::string& filename, 
         const ::google::protobuf::Message* file_meta) {

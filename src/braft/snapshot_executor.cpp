@@ -111,6 +111,7 @@ SnapshotExecutor::~SnapshotExecutor() {
     }
 }
 
+// INSTRUMENT_FUNC
 void SnapshotExecutor::do_snapshot(Closure* done) {
     std::unique_lock<raft_mutex_t> lck(_mutex);
     int64_t saved_last_snapshot_index = _last_snapshot_index;
@@ -396,6 +397,7 @@ int SnapshotExecutor::init(const SnapshotExecutorOptions& options) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void SnapshotExecutor::install_snapshot(brpc::Controller* cntl,
                                         const InstallSnapshotRequest* request,
                                         InstallSnapshotResponse* response,

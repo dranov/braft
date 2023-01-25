@@ -217,6 +217,7 @@ int select_leader(const GroupId& group, PeerId* leader) {
     return rtb->select_leader(group, leader);
 }
 
+// INSTRUMENT_FUNC
 int remove_group(const GroupId& group) {
     RouteTable* const rtb = RouteTable::GetInstance();
     return rtb->remove_group(group);

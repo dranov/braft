@@ -681,6 +681,7 @@ void NodeImpl::apply(const Task& task) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::on_configuration_change_done(int64_t term) {
     BAIDU_SCOPED_LOCK(_mutex);
     if (_state > STATE_TRANSFERRING || term != _current_term) {
@@ -863,6 +864,7 @@ butil::Status NodeImpl::list_peers(std::vector<PeerId>* peers) {
     return butil::Status::OK();
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::add_peer(const PeerId& peer, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     Configuration new_conf = _conf.conf;
@@ -870,6 +872,7 @@ void NodeImpl::add_peer(const PeerId& peer, Closure* done) {
     return unsafe_register_conf_change(_conf.conf, new_conf, done);
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::remove_peer(const PeerId& peer, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     Configuration new_conf = _conf.conf;
@@ -877,11 +880,13 @@ void NodeImpl::remove_peer(const PeerId& peer, Closure* done) {
     return unsafe_register_conf_change(_conf.conf, new_conf, done);
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::change_peers(const Configuration& new_peers, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     return unsafe_register_conf_change(_conf.conf, new_peers, done);
 }
 
+// INSTRUMENT_FUNC
 butil::Status NodeImpl::reset_peers(const Configuration& new_peers) {
     BAIDU_SCOPED_LOCK(_mutex);
 
@@ -931,6 +936,7 @@ butil::Status NodeImpl::reset_peers(const Configuration& new_peers) {
     return butil::Status::OK();
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::snapshot(Closure* done) {
     do_snapshot(done);
 }
@@ -948,6 +954,7 @@ void NodeImpl::do_snapshot(Closure* done) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::shutdown(Closure* done) {
     // Note: shutdown is probably invoked more than once, make sure this method
     // is idempotent
@@ -1013,6 +1020,7 @@ void NodeImpl::shutdown(Closure* done) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::join() {
     if (_fsm_caller) {
         _fsm_caller->join();
@@ -1746,6 +1754,7 @@ void NodeImpl::request_peers_to_vote(const std::set<PeerId>& peers,
 }
 
 // in lock
+// INSTRUMENT_FUNC
 void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate, 
                          const butil::Status& status) {
     BRAFT_VLOG << "node " << _group_id << ":" << _server_id
@@ -1833,6 +1842,7 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
 void NodeImpl::reset_leader_id(const PeerId& new_leader_id, 
         const butil::Status& status) {
     if (new_leader_id.is_empty()) {
+        // INSTRUMENT_BB
         if (!_leader_id.is_empty() && _state > STATE_TRANSFERRING) {
             LeaderChangeContext stop_following_context(_leader_id, 
                     _current_term, status);
@@ -1840,6 +1850,7 @@ void NodeImpl::reset_leader_id(const PeerId& new_leader_id,
         }
         _leader_id.reset();
     } else {
+        // INSTRUMENT_BB
         if (_leader_id.is_empty()) {
             _pre_vote_ctx.reset(this);
             LeaderChangeContext start_following_context(new_leader_id, 
@@ -2628,6 +2639,7 @@ void NodeImpl::handle_install_snapshot_request(brpc::Controller* cntl,
             cntl, request, response, done_guard.release());
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::update_configuration_after_installing_snapshot() {
     BAIDU_SCOPED_LOCK(_mutex);
     _log_manager->check_and_set_configuration(&_conf);
@@ -2870,6 +2882,7 @@ bool NodeImpl::handle_out_of_order_append_entries(brpc::Controller* cntl,
     if (!FLAGS_raft_enable_append_entries_cache ||
         local_last_index >= request->prev_log_index() ||
         request->entries_size() == 0) {
+        // INSTRUMENT_BB
         return false;
     }
     if (!_append_entries_cache) {
@@ -2886,6 +2899,7 @@ bool NodeImpl::handle_out_of_order_append_entries(brpc::Controller* cntl,
         delete _append_entries_cache;
         _append_entries_cache = NULL;
     }
+    // INSTRUMENT_BB
     return rc;
 }
 
@@ -3317,6 +3331,7 @@ void NodeImpl::ConfigurationCtx::reset(butil::Status* st) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::enter_readonly_mode() {
     BAIDU_SCOPED_LOCK(_mutex);
     if (!_node_readonly) {
@@ -3326,6 +3341,7 @@ void NodeImpl::enter_readonly_mode() {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::leave_readonly_mode() {
     BAIDU_SCOPED_LOCK(_mutex);
     if (_node_readonly) {
