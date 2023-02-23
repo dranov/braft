@@ -59,11 +59,7 @@ case $1 in
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
         
-        if [[ $use_coverage -eq 1 ]]; then
-             /opt/cov-server/cov-server.py 0.0.0.0:58080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        else 
-            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        fi
+        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 >> run.log 2>&1 &
     sleep 1
     braft_cli reset_peer --group=Atomic --peer="${self_node}" --new_peers="${peers}"
         ;;
@@ -71,11 +67,8 @@ case $1 in
         echo "start atomic_server ${self_node}"
         rm -rf log data run.log core.* && mkdir log
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
-        if [[ $use_coverage -eq 1 ]]; then
-             /opt/cov-server/cov-server.py 0.0.0.0:58080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        else
-            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        fi
+
+        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 >> run.log 2>&1 &
         ;;
     stop)
         echo "stop atomic_server ${self_node}"
@@ -85,11 +78,8 @@ case $1 in
         echo "restart atomic_server ${self_node}"
         killall -9 atomic_server || true
         #./atomic_server -raft_sync=true -bthread_concurrency=24 -crash_on_fatal_log=true -port=8700 > run.log 2>&1 &
-        if [[ $use_coverage -eq 1 ]]; then
-             /opt/cov-server/cov-server.py 0.0.0.0:58080 ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        else
-            ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 > run.log 2>&1 &
-        fi
+
+        ./atomic_server -raft_sync=true -bthread_concurrency=24 --log_dir=log -port=8700 >> run.log 2>&1 &
         ;;
     join)
         echo "join atomic_server ${self_node}"
