@@ -231,24 +231,34 @@ FileSystemAdaptor* default_file_system() {
 int file_error_to_os_error(butil::File::Error e) {
     switch (e) {
         case butil::File::FILE_OK: 
+            // INSTRUMENT_BB
             return 0;
         case butil::File::FILE_ERROR_IN_USE:
+            // INSTRUMENT_BB
             return EAGAIN;
         case butil::File::FILE_ERROR_ACCESS_DENIED:
+            // INSTRUMENT_BB
             return EACCES;
         case butil::File::FILE_ERROR_EXISTS:
+            // INSTRUMENT_BB
             return EEXIST;
         case butil::File::FILE_ERROR_NOT_FOUND:
+            // INSTRUMENT_BB
             return ENOENT;
         case butil::File::FILE_ERROR_TOO_MANY_OPENED:
+            // INSTRUMENT_BB
             return EMFILE;
         case butil::File::FILE_ERROR_NO_MEMORY:
+            // INSTRUMENT_BB
             return ENOMEM;
         case butil::File::FILE_ERROR_NO_SPACE:
+            // INSTRUMENT_BB
             return ENOSPC;
         case butil::File::FILE_ERROR_NOT_A_DIRECTORY:
+            // INSTRUMENT_BB
             return ENOTDIR;
         case butil::File::FILE_ERROR_IO:
+            // INSTRUMENT_BB
             return EIO;
         default:
             return EINVAL;

@@ -119,6 +119,7 @@ int gc_raft_data(const GCOptions& gc_options) {
         LOG(WARNING) << "Group " << vgid << " failed to gc raft log, uri " << log_uri; 
     }
     // TODO encode vgid into raft_meta_uri ?
+    // INSTRUMENT_BB
     status = RaftMetaStorage::destroy(raft_meta_uri, vgid);
     if (!status.ok()) {
         is_success = false;

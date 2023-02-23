@@ -1807,6 +1807,7 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
         butil::Status status = _meta_storage->
                     set_term_and_votedfor(term, _voted_id, _v_group_id);
         if (!status.ok()) {
+            // INSTRUMENT_BB
             LOG(ERROR) << "node " << _group_id << ":" << _server_id
                        << " fail to set_term_and_votedfor when step_down, error: "
                        << status;
@@ -1820,9 +1821,11 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
                                             &_waking_candidate, _conf);
         // FIXME: We issue the RPC in the critical section, which is fine now
         // since the Node is going to quit when reaching the branch
+        // INSTRUMENT_BB
         Replicator::send_timeout_now_and_stop(
                 _waking_candidate, _options.election_timeout_ms);
     } else {
+        // INSTRUMENT_BB
         _replicator_group.stop_all();
     }
     if (_stop_transfer_arg != NULL) {
@@ -3408,20 +3411,25 @@ void NodeImpl::get_leader_lease_status(LeaderLeaseStatus* lease_status) {
     _leader_lease.get_lease_info(&internal_info);
     switch (internal_info.state) {
         case LeaderLease::DISABLED:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_DISABLED;
             return;
         case LeaderLease::EXPIRED:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_EXPIRED;
             return;
         case LeaderLease::NOT_READY:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_NOT_READY;
             return;
         case LeaderLease::VALID:
+            // INSTRUMENT_BB
             lease_status->term = internal_info.term;
             lease_status->lease_epoch = internal_info.lease_epoch;
             lease_status->state = LEASE_VALID;
             return;
         case LeaderLease::SUSPECT:
+            // INSTRUMENT_BB
             // Need do heavy check to judge if a lease still valid.
             break;
     }

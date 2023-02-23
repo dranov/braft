@@ -141,6 +141,7 @@ int update_configuration(const GroupId& group, const Configuration& conf) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 int update_configuration(const GroupId& group, const std::string& conf_str) {
     Configuration conf;
     if (conf.parse_from(conf_str) != 0) {
@@ -155,6 +156,7 @@ int update_leader(const GroupId& group, const PeerId& leader_id) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 int update_leader(const GroupId& group, const std::string& leader_str) {
     PeerId leader_id;
     if (!leader_str.empty() && leader_id.parse(leader_str) != 0) {
@@ -163,6 +165,7 @@ int update_leader(const GroupId& group, const std::string& leader_str) {
     return update_leader(group, leader_id);
 }
 
+// INSTRUMENT_FUNC
 butil::Status refresh_leader(const GroupId& group, int timeout_ms) {
     RouteTable* const rtb = RouteTable::GetInstance();
     Configuration conf;
@@ -212,6 +215,7 @@ butil::Status refresh_leader(const GroupId& group, int timeout_ms) {
     return error;
 }
 
+// INSTRUMENT_FUNC
 int select_leader(const GroupId& group, PeerId* leader) {
     RouteTable* const rtb = RouteTable::GetInstance();
     return rtb->select_leader(group, leader);

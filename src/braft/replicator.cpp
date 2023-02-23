@@ -244,8 +244,10 @@ void Replicator::_block(long start_time_us, int error_code) {
     // fine now.
     int blocking_time = 0;
     if (error_code == EBUSY || error_code == EINTR) {
+        // INSTRUMENT_BB
         blocking_time = FLAGS_raft_retry_replicate_interval_ms;
     } else {
+        // INSTRUMENT_BB
         blocking_time = *_options.dynamic_heartbeat_timeout_ms;
     }
     const timespec due_time = butil::milliseconds_from(
@@ -543,6 +545,7 @@ int Replicator::_fill_common_fields(AppendEntriesRequest* request,
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_send_empty_entries(bool is_heartbeat) {
     std::unique_ptr<brpc::Controller> cntl(new brpc::Controller);
     std::unique_ptr<AppendEntriesRequest> request(new AppendEntriesRequest);
@@ -585,6 +588,7 @@ void Replicator::_send_empty_entries(bool is_heartbeat) {
     CHECK_EQ(0, bthread_id_unlock(_id)) << "Fail to unlock " << _id;
 }
 
+// INSTRUMENT_FUNC
 int Replicator::_prepare_entry(int offset, EntryMeta* em, butil::IOBuf *data) {
     if (data->length() >= (size_t)FLAGS_raft_max_body_size) {
         return ERANGE;
@@ -625,6 +629,7 @@ int Replicator::_prepare_entry(int offset, EntryMeta* em, butil::IOBuf *data) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_send_entries() {
     if (_flying_append_entries_size >= FLAGS_raft_max_entries_size ||
         _append_entries_in_fly.size() >= (size_t)FLAGS_raft_max_parallel_append_entries_rpc_num ||
@@ -914,6 +919,7 @@ void Replicator::_on_install_snapshot_returned(
     return r->_send_entries();
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_notify_on_caught_up(int error_code, bool before_destroy) {
     if (_catchup_closure == NULL) {
         return;
@@ -1020,6 +1026,7 @@ void Replicator::_on_catch_up_timedout(void* arg) {
             << "Fail to unlock" << id;
 }
 
+// INSTRUMENT_FUNC
 int Replicator::transfer_leadership(ReplicatorId id, int64_t log_index) {
     Replicator* r = NULL;
     bthread_id_t dummy = { id };
@@ -1031,6 +1038,7 @@ int Replicator::transfer_leadership(ReplicatorId id, int64_t log_index) {
     return r->_transfer_leadership(log_index);
 }
 
+// INSTRUMENT_FUNC
 int Replicator::stop_transfer_leadership(ReplicatorId id) {
     Replicator* r = NULL;
     bthread_id_t dummy = { id };
@@ -1208,6 +1216,7 @@ int Replicator::change_readonly_config(ReplicatorId id, bool readonly) {
     return r->_change_readonly_config(readonly);
 }
 
+// INSTRUMENT_FUNC
 int Replicator::_change_readonly_config(bool readonly) {
     if ((readonly && _readonly_index != 0) ||
         (!readonly && _readonly_index == 0)) {
@@ -1245,6 +1254,7 @@ bool Replicator::readonly(ReplicatorId id) {
     return readonly;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_destroy() {
     bthread_id_t saved_id = _id;
     CHECK_EQ(0, bthread_id_unlock_and_destroy(saved_id));
@@ -1275,15 +1285,19 @@ void Replicator::_describe(std::ostream& os, bool use_html) {
     }
     switch (st.st) {
     case IDLE:
+        // INSTRUMENT_BB
         os << "idle";
         break;
     case BLOCKING:
+        // INSTRUMENT_BB
         os << "blocking";
         break;
     case APPENDING_ENTRIES:
+        // INSTRUMENT_BB
         os << "appending [" << st.first_log_index << ", " << st.last_log_index << ']';
         break;
     case INSTALLING_SNAPSHOT:
+        // INSTRUMENT_BB
         os << "installing snapshot {" << st.last_log_included
            << ", " << st.last_term_included  << '}';
         break;

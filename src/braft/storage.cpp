@@ -99,6 +99,7 @@ SnapshotStorage* SnapshotStorage::create(const std::string& uri) {
     return type->new_instance(parameter);
 }
 
+// INSTRUMENT_FUNC
 butil::Status SnapshotStorage::destroy(const std::string& uri) {
     butil::Status status;
     butil::StringPiece copied_uri(uri);
@@ -139,6 +140,7 @@ RaftMetaStorage* RaftMetaStorage::create(const std::string& uri) {
     return type->new_instance(parameter);
 }
 
+// INSTRUMENT_FUNC
 butil::Status RaftMetaStorage::destroy(const std::string& uri,
                                        const VersionedGroupId& vgid) {
     butil::Status status;

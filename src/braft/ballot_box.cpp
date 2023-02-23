@@ -52,12 +52,15 @@ int BallotBox::commit_at(
     // blocks all the other Replicators and LogManagers
     std::unique_lock<raft_mutex_t> lck(_mutex);
     if (_pending_index == 0) {
+        // INSTRUMENT_BB
         return EINVAL;
     }
     if (last_log_index < _pending_index) {
+        // INSTRUMENT_BB
         return 0;
     }
     if (last_log_index >= _pending_index + (int64_t)_pending_meta_queue.size()) {
+        // INSTRUMENT_BB
         return ERANGE;
     }
 

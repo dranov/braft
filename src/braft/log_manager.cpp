@@ -466,6 +466,7 @@ void LogManager::append_to_storage(std::vector<LogEntry*>* to_append,
         timer.stop();
         if (nappent != (int)to_append->size()) {
             // FIXME
+            // INSTRUMENT_BB
             LOG(ERROR) << "Fail to append_entries, "
                        << "nappent=" << nappent 
                        << ", to_append=" << to_append->size();
@@ -553,6 +554,7 @@ int LogManager::disk_thread(void* meta,
 
     LogManager* log_manager = static_cast<LogManager*>(meta);
     // FIXME(chenzhangyi01): it's buggy
+    // INSTRUMENT_BB
     LogId last_id = log_manager->_disk_id;
     StableClosure* storage[256];
     AppendBatcher ab(storage, ARRAY_SIZE(storage), &last_id, log_manager);
@@ -575,6 +577,7 @@ int LogManager::disk_thread(void* meta,
                     // Not used log_manager->get_disk_id() as it might be out of
                     // date
                     // FIXME: it's buggy
+                    // INSTRUMENT_BB
                     llic->set_last_log_id(last_id);
                     break;
                 }
@@ -662,10 +665,12 @@ void LogManager::set_snapshot(const SnapshotMeta* meta) {
     if (term == 0) {
         // last_included_index is larger than last_index
         // FIXME: what if last_included_index is less than first_index?
+        // INSTRUMENT_BB
         _virtual_first_log_id = _last_snapshot_id;
         truncate_prefix(meta->last_included_index() + 1, lck);
         return;
     } else if (term == meta->last_included_term()) {
+        // INSTRUMENT_BB
         // Truncating log to the index of the last snapshot.
         // We don't truncate log before the latest snapshot immediately since
         // some log around last_snapshot_index is probably needed by some

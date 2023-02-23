@@ -111,12 +111,12 @@ SnapshotExecutor::~SnapshotExecutor() {
     }
 }
 
-// INSTRUMENT_FUNC
 void SnapshotExecutor::do_snapshot(Closure* done) {
     std::unique_lock<raft_mutex_t> lck(_mutex);
     int64_t saved_last_snapshot_index = _last_snapshot_index;
     int64_t saved_last_snapshot_term = _last_snapshot_term;
     if (_stopped) {
+        // INSTRUMENT_BB
         lck.unlock();
         if (done) {
             done->status().set_error(EPERM, "Is stopped");
@@ -126,6 +126,7 @@ void SnapshotExecutor::do_snapshot(Closure* done) {
     }
     // check snapshot install/load
     if (_downloading_snapshot.load(butil::memory_order_relaxed)) {
+        // INSTRUMENT_BB
         lck.unlock();
         if (done) {
             done->status().set_error(EBUSY, "Is loading another snapshot");
@@ -136,6 +137,7 @@ void SnapshotExecutor::do_snapshot(Closure* done) {
 
     // check snapshot saving?
     if (_saving_snapshot) {
+        // INSTRUMENT_BB
         lck.unlock();
         if (done) {
             done->status().set_error(EBUSY, "Is saving another snapshot");
@@ -149,6 +151,7 @@ void SnapshotExecutor::do_snapshot(Closure* done) {
         // There might be false positive as the last_applied_index() is being
         // updated. But it's fine since we will do next snapshot saving in a
         // predictable time.
+        // INSTRUMENT_BB
         lck.unlock();
 
         _log_manager->clear_bufferred_logs();
@@ -177,6 +180,7 @@ void SnapshotExecutor::do_snapshot(Closure* done) {
     _saving_snapshot = true;
     SaveSnapshotDone* snapshot_save_done = new SaveSnapshotDone(this, writer, done);
     if (_fsm_caller->on_snapshot_save(snapshot_save_done) != 0) {
+        // INSTRUMENT_BB
         lck.unlock();
         if (done) {
             snapshot_save_done->status().set_error(EHOSTDOWN, "The raft node is down");
@@ -266,6 +270,7 @@ void SnapshotExecutor::on_snapshot_load_done(const butil::Status& st) {
     lck.unlock();
     if (_node) {
         // FIXME: race with set_peer, not sure if this is fine
+        // INSTRUMENT_BB
         _node->update_configuration_after_installing_snapshot();
     }
     lck.lock();
