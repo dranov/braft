@@ -56,7 +56,7 @@ int BallotBox::commit_at(
         return EINVAL;
     }
     if (last_log_index < _pending_index) {
-        // INSTRUMENT_BB
+
         return 0;
     }
     if (last_log_index >= _pending_index + (int64_t)_pending_meta_queue.size()) {

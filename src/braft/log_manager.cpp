@@ -400,7 +400,7 @@ int LogManager::check_and_resolve_conflict(
             entries->erase(entries->begin(), 
                            entries->begin() + conflicting_index);
         }
-        // INSTRUMENT_BB
+
         done_guard.release();
         return 0;
     }
@@ -554,7 +554,7 @@ int LogManager::disk_thread(void* meta,
 
     LogManager* log_manager = static_cast<LogManager*>(meta);
     // FIXME(chenzhangyi01): it's buggy
-    // INSTRUMENT_BB
+
     LogId last_id = log_manager->_disk_id;
     StableClosure* storage[256];
     AppendBatcher ab(storage, ARRAY_SIZE(storage), &last_id, log_manager);
@@ -790,7 +790,7 @@ LogEntry* LogManager::get_entry(const int64_t index) {
     return entry;
 }
 
-// INSTRUMENT_FUNC
+
 void LogManager::get_configuration(const int64_t index, ConfigurationEntry* conf) {
     BAIDU_SCOPED_LOCK(_mutex);
     return _config_manager->get(index, conf);

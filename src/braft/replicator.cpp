@@ -545,7 +545,7 @@ int Replicator::_fill_common_fields(AppendEntriesRequest* request,
     return 0;
 }
 
-// INSTRUMENT_FUNC
+
 void Replicator::_send_empty_entries(bool is_heartbeat) {
     std::unique_ptr<brpc::Controller> cntl(new brpc::Controller);
     std::unique_ptr<AppendEntriesRequest> request(new AppendEntriesRequest);
@@ -588,7 +588,7 @@ void Replicator::_send_empty_entries(bool is_heartbeat) {
     CHECK_EQ(0, bthread_id_unlock(_id)) << "Fail to unlock " << _id;
 }
 
-// INSTRUMENT_FUNC
+
 int Replicator::_prepare_entry(int offset, EntryMeta* em, butil::IOBuf *data) {
     if (data->length() >= (size_t)FLAGS_raft_max_body_size) {
         return ERANGE;
@@ -629,7 +629,7 @@ int Replicator::_prepare_entry(int offset, EntryMeta* em, butil::IOBuf *data) {
     return 0;
 }
 
-// INSTRUMENT_FUNC
+
 void Replicator::_send_entries() {
     if (_flying_append_entries_size >= FLAGS_raft_max_entries_size ||
         _append_entries_in_fly.size() >= (size_t)FLAGS_raft_max_parallel_append_entries_rpc_num ||

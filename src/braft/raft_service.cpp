@@ -87,7 +87,7 @@ void RaftServiceImpl::request_vote(google::protobuf::RpcController* cntl_base,
     }
 }
 
-// INSTRUMENT_FUNC
+
 void RaftServiceImpl::append_entries(google::protobuf::RpcController* cntl_base,
                             const AppendEntriesRequest* request,
                             AppendEntriesResponse* response,

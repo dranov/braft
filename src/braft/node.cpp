@@ -3334,7 +3334,7 @@ void NodeImpl::ConfigurationCtx::reset(butil::Status* st) {
     }
 }
 
-// INSTRUMENT_FUNC
+
 void NodeImpl::enter_readonly_mode() {
     BAIDU_SCOPED_LOCK(_mutex);
     if (!_node_readonly) {
@@ -3344,7 +3344,7 @@ void NodeImpl::enter_readonly_mode() {
     }
 }
 
-// INSTRUMENT_FUNC
+
 void NodeImpl::leave_readonly_mode() {
     BAIDU_SCOPED_LOCK(_mutex);
     if (_node_readonly) {

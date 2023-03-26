@@ -368,7 +368,7 @@ void FSMCaller::do_snapshot_save(SaveSnapshotClosure* done) {
     return;
 }
 
-// INSTRUMENT_FUNC
+
 int FSMCaller::on_snapshot_load(LoadSnapshotClosure* done) {
     ApplyTask task;
     task.type = SNAPSHOT_LOAD;

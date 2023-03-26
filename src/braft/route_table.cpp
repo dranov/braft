@@ -215,7 +215,7 @@ butil::Status refresh_leader(const GroupId& group, int timeout_ms) {
     return error;
 }
 
-// INSTRUMENT_FUNC
+
 int select_leader(const GroupId& group, PeerId* leader) {
     RouteTable* const rtb = RouteTable::GetInstance();
     return rtb->select_leader(group, leader);
