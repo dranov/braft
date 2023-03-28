@@ -25,6 +25,10 @@
 #include <braft/storage.h>
 #include <braft/node.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "atomic.pb.h"
 
 
@@ -477,6 +481,17 @@ int main(int argc, char* argv[]) {
     brpc::Server server;
     example::Atomic atomic;
     example::AtomicServiceImpl service(&atomic);
+
+    LOG(INFO) << "Starting santizer checking...";
+    char *s = malloc(100);
+    free(s);
+    strcpy(s, "Hello world!");
+    LOG(INFO) << "Testing end...";
+
+    // Inject error
+	char *s = malloc(100);
+    strcpy(s, "Hello world!");
+    printf("string is: %s\n", s);
 
     // Add your service into RPC rerver
     if (server.AddService(&service, 
