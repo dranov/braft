@@ -483,15 +483,10 @@ int main(int argc, char* argv[]) {
     example::AtomicServiceImpl service(&atomic);
 
     LOG(INFO) << "Starting santizer checking...";
-    char *s = malloc(100);
+    char *s = (char*)malloc(100);
     free(s);
     strcpy(s, "Hello world!");
     LOG(INFO) << "Testing end...";
-
-    // Inject error
-	char *s = malloc(100);
-    strcpy(s, "Hello world!");
-    printf("string is: %s\n", s);
 
     // Add your service into RPC rerver
     if (server.AddService(&service, 
