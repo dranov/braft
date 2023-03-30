@@ -37,13 +37,13 @@ bool NodeManager::server_exists(butil::EndPoint addr) {
     return _addr_set.find(addr) != _addr_set.end();
 }
 
-// INSTRUMENT_FUNC
+
 void NodeManager::remove_address(butil::EndPoint addr) {
     BAIDU_SCOPED_LOCK(_mutex);
     _addr_set.erase(addr);
 }
 
-// INSTRUMENT_FUNC
+
 int NodeManager::add_service(brpc::Server* server, 
                              const butil::EndPoint& listen_address) {
     if (server == NULL) {
@@ -114,7 +114,7 @@ size_t NodeManager::_remove_node(Maps& m, const NodeImpl* node) {
     return 0;
 }
 
-// INSTRUMENT_FUNC
+
 bool NodeManager::add(NodeImpl* node) {
     // check address ok?
     if (!server_exists(node->node_id().peer_id.addr)) {
@@ -124,7 +124,7 @@ bool NodeManager::add(NodeImpl* node) {
     return _nodes.Modify(_add_node, node) != 0;
 }
 
-// INSTRUMENT_FUNC
+
 bool NodeManager::remove(NodeImpl* node) {
     return _nodes.Modify(_remove_node, node) != 0;
 }

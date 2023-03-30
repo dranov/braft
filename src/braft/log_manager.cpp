@@ -466,7 +466,7 @@ void LogManager::append_to_storage(std::vector<LogEntry*>* to_append,
         timer.stop();
         if (nappent != (int)to_append->size()) {
             // FIXME
-            // INSTRUMENT_BB
+
             LOG(ERROR) << "Fail to append_entries, "
                        << "nappent=" << nappent 
                        << ", to_append=" << to_append->size();
@@ -577,7 +577,7 @@ int LogManager::disk_thread(void* meta,
                     // Not used log_manager->get_disk_id() as it might be out of
                     // date
                     // FIXME: it's buggy
-                    // INSTRUMENT_BB
+
                     llic->set_last_log_id(last_id);
                     break;
                 }
@@ -862,7 +862,7 @@ LogManager::WaitId LogManager::wait(
     return notify_on_new_log(expected_last_log_index, wm);
 }
 
-// INSTRUMENT_FUNC
+
 LogManager::WaitId LogManager::notify_on_new_log(
         int64_t expected_last_log_index, WaitMeta* wm) {
     std::unique_lock<raft_mutex_t> lck(_mutex);

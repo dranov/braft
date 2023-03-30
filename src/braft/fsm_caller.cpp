@@ -82,21 +82,21 @@ int FSMCaller::run(void* meta, bthread::TaskIterator<ApplyTask>& iter) {
             }
             switch (iter->type) {
             case COMMITTED:
-                // INSTRUMENT_BB
+
                 if (iter->committed_index > max_committed_index) {
                     max_committed_index = iter->committed_index;
                     counter++;
                 }
                 break;
             case SNAPSHOT_SAVE:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = SNAPSHOT_SAVE;
                 if (caller->pass_by_status(iter->done)) {
                     caller->do_snapshot_save((SaveSnapshotClosure*)iter->done);
                 }
                 break;
             case SNAPSHOT_LOAD:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = SNAPSHOT_LOAD;
                 // TODO: do we need to allow the snapshot loading to recover the
                 // StateMachine if possible?
@@ -105,35 +105,35 @@ int FSMCaller::run(void* meta, bthread::TaskIterator<ApplyTask>& iter) {
                 }
                 break;
             case LEADER_STOP:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = LEADER_STOP;
                 caller->do_leader_stop(*(iter->status));
                 delete iter->status;
                 break;
             case LEADER_START:
-                // INSTRUMENT_BB
+
                 caller->do_leader_start(*(iter->leader_start_context));
                 delete iter->leader_start_context;
                 break;
             case START_FOLLOWING:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = START_FOLLOWING;
                 caller->do_start_following(*(iter->leader_change_context));
                 delete iter->leader_change_context;
                 break;
             case STOP_FOLLOWING:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = STOP_FOLLOWING;
                 caller->do_stop_following(*(iter->leader_change_context));
                 delete iter->leader_change_context;
                 break;
             case ERROR:
-                // INSTRUMENT_BB
+
                 caller->_cur_task = ERROR;
                 caller->do_on_error((OnErrorClousre*)iter->done);
                 break;
             case IDLE:
-                // INSTRUMENT_BB
+
                 CHECK(false) << "Can't reach here";
                 break;
             };

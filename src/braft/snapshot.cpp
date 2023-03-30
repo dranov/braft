@@ -49,7 +49,7 @@ int LocalSnapshotMetaTable::add_file(const std::string& filename,
     return ret.second ? 0 : -1;
 }
 
-// INSTRUMENT_FUNC
+
 int LocalSnapshotMetaTable::remove_file(const std::string& filename) {
     Map::iterator iter = _file_map.find(filename);
     if (iter == _file_map.end()) {

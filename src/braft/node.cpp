@@ -1807,7 +1807,7 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
         butil::Status status = _meta_storage->
                     set_term_and_votedfor(term, _voted_id, _v_group_id);
         if (!status.ok()) {
-            // INSTRUMENT_BB
+
             LOG(ERROR) << "node " << _group_id << ":" << _server_id
                        << " fail to set_term_and_votedfor when step_down, error: "
                        << status;
@@ -1821,11 +1821,11 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
                                             &_waking_candidate, _conf);
         // FIXME: We issue the RPC in the critical section, which is fine now
         // since the Node is going to quit when reaching the branch
-        // INSTRUMENT_BB
+
         Replicator::send_timeout_now_and_stop(
                 _waking_candidate, _options.election_timeout_ms);
     } else {
-        // INSTRUMENT_BB
+
         _replicator_group.stop_all();
     }
     if (_stop_transfer_arg != NULL) {
@@ -1845,7 +1845,7 @@ void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate,
 void NodeImpl::reset_leader_id(const PeerId& new_leader_id, 
         const butil::Status& status) {
     if (new_leader_id.is_empty()) {
-        // INSTRUMENT_BB
+
         if (!_leader_id.is_empty() && _state > STATE_TRANSFERRING) {
             LeaderChangeContext stop_following_context(_leader_id, 
                     _current_term, status);
@@ -1853,7 +1853,7 @@ void NodeImpl::reset_leader_id(const PeerId& new_leader_id,
         }
         _leader_id.reset();
     } else {
-        // INSTRUMENT_BB
+
         if (_leader_id.is_empty()) {
             _pre_vote_ctx.reset(this);
             LeaderChangeContext start_following_context(new_leader_id, 

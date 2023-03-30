@@ -244,10 +244,10 @@ void Replicator::_block(long start_time_us, int error_code) {
     // fine now.
     int blocking_time = 0;
     if (error_code == EBUSY || error_code == EINTR) {
-        // INSTRUMENT_BB
+
         blocking_time = FLAGS_raft_retry_replicate_interval_ms;
     } else {
-        // INSTRUMENT_BB
+
         blocking_time = *_options.dynamic_heartbeat_timeout_ms;
     }
     const timespec due_time = butil::milliseconds_from(
@@ -919,7 +919,7 @@ void Replicator::_on_install_snapshot_returned(
     return r->_send_entries();
 }
 
-// INSTRUMENT_FUNC
+
 void Replicator::_notify_on_caught_up(int error_code, bool before_destroy) {
     if (_catchup_closure == NULL) {
         return;
