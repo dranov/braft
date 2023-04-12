@@ -685,6 +685,7 @@ void NodeImpl::apply(const Task& task) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::on_configuration_change_done(int64_t term) {
     BAIDU_SCOPED_LOCK(_mutex);
     if (_state > STATE_TRANSFERRING || term != _current_term) {
@@ -867,6 +868,7 @@ butil::Status NodeImpl::list_peers(std::vector<PeerId>* peers) {
     return butil::Status::OK();
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::add_peer(const PeerId& peer, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     Configuration new_conf = _conf.conf;
@@ -874,6 +876,7 @@ void NodeImpl::add_peer(const PeerId& peer, Closure* done) {
     return unsafe_register_conf_change(_conf.conf, new_conf, done);
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::remove_peer(const PeerId& peer, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     Configuration new_conf = _conf.conf;
@@ -881,11 +884,13 @@ void NodeImpl::remove_peer(const PeerId& peer, Closure* done) {
     return unsafe_register_conf_change(_conf.conf, new_conf, done);
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::change_peers(const Configuration& new_peers, Closure* done) {
     BAIDU_SCOPED_LOCK(_mutex);
     return unsafe_register_conf_change(_conf.conf, new_peers, done);
 }
 
+// INSTRUMENT_FUNC
 butil::Status NodeImpl::reset_peers(const Configuration& new_peers) {
     BAIDU_SCOPED_LOCK(_mutex);
 
@@ -935,6 +940,7 @@ butil::Status NodeImpl::reset_peers(const Configuration& new_peers) {
     return butil::Status::OK();
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::snapshot(Closure* done) {
     do_snapshot(done);
 }
@@ -952,6 +958,7 @@ void NodeImpl::do_snapshot(Closure* done) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::shutdown(Closure* done) {
     // Note: shutdown is probably invoked more than once, make sure this method
     // is idempotent
@@ -1017,6 +1024,7 @@ void NodeImpl::shutdown(Closure* done) {
     }
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::join() {
     if (_fsm_caller) {
         _fsm_caller->join();
@@ -1752,6 +1760,7 @@ void NodeImpl::request_peers_to_vote(const std::set<PeerId>& peers,
 }
 
 // in lock
+// INSTRUMENT_FUNC
 void NodeImpl::step_down(const int64_t term, bool wakeup_a_candidate, 
                          const butil::Status& status) {
     BRAFT_VLOG << "node " << _group_id << ":" << _server_id
@@ -2634,6 +2643,7 @@ void NodeImpl::handle_install_snapshot_request(brpc::Controller* cntl,
             cntl, request, response, done_guard.release());
 }
 
+// INSTRUMENT_FUNC
 void NodeImpl::update_configuration_after_installing_snapshot() {
     BAIDU_SCOPED_LOCK(_mutex);
     _log_manager->check_and_set_configuration(&_conf);
@@ -2876,6 +2886,7 @@ bool NodeImpl::handle_out_of_order_append_entries(brpc::Controller* cntl,
     if (!FLAGS_raft_enable_append_entries_cache ||
         local_last_index >= request->prev_log_index() ||
         request->entries_size() == 0) {
+        // INSTRUMENT_BB
         return false;
     }
     if (!_append_entries_cache) {
@@ -2892,6 +2903,7 @@ bool NodeImpl::handle_out_of_order_append_entries(brpc::Controller* cntl,
         delete _append_entries_cache;
         _append_entries_cache = NULL;
     }
+    // INSTRUMENT_BB
     return rc;
 }
 
@@ -3398,21 +3410,26 @@ void NodeImpl::get_leader_lease_status(LeaderLeaseStatus* lease_status) {
     _leader_lease.get_lease_info(&internal_info);
     switch (internal_info.state) {
         case LeaderLease::DISABLED:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_DISABLED;
             return;
         case LeaderLease::EXPIRED:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_EXPIRED;
             return;
         case LeaderLease::NOT_READY:
+            // INSTRUMENT_BB
             lease_status->state = LEASE_NOT_READY;
             return;
         case LeaderLease::VALID:
+            // INSTRUMENT_BB
             lease_status->term = internal_info.term;
             lease_status->lease_epoch = internal_info.lease_epoch;
             lease_status->state = LEASE_VALID;
             return;
         case LeaderLease::SUSPECT:
             // Need do heavy check to judge if a lease still valid.
+            // INSTRUMENT_BB
             break;
     }
 

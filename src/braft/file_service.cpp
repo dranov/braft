@@ -104,6 +104,7 @@ FileServiceImpl::FileServiceImpl() {
     _next_id = ((int64_t)getpid() << 45) | (butil::gettimeofday_us() << 17 >> 17);
 }
 
+// INSTRUMENT_FUNC
 int FileServiceImpl::add_reader(FileReader* reader, int64_t* reader_id) {
     BAIDU_SCOPED_LOCK(_mutex);
     *reader_id = _next_id++;
@@ -111,6 +112,7 @@ int FileServiceImpl::add_reader(FileReader* reader, int64_t* reader_id) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 int FileServiceImpl::remove_reader(int64_t reader_id) {
     BAIDU_SCOPED_LOCK(_mutex);
     return _reader_map.erase(reader_id) == 1 ? 0 : -1;

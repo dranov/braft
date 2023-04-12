@@ -248,6 +248,7 @@ private:
     int64_t _next_log_index;
 };
 
+// INSTRUMENT_FUNC
 int LogManager::truncate_prefix(const int64_t first_index_kept,
                                 std::unique_lock<raft_mutex_t>& lck) {
     std::deque<LogEntry*> saved_logs_in_memory;
@@ -304,6 +305,7 @@ int LogManager::reset(const int64_t next_log_index,
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void LogManager::unsafe_truncate_suffix(const int64_t last_index_kept) {
 
     if (last_index_kept < _applied_id.index) {
@@ -338,6 +340,7 @@ int LogManager::check_and_resolve_conflict(
         // Node is currently the leader and |entries| are from the user who 
         // don't know the correct indexes the logs should assign to. So we have
         // to assign indexes to the appending entries
+        // INSTRUMENT_BB
         for (size_t i = 0; i < entries->size(); ++i) {
             (*entries)[i]->id.index = ++_last_log_index;
         }
@@ -348,6 +351,7 @@ int LogManager::check_and_resolve_conflict(
         // should check and resolve the confliction between the local logs and
         // |entries|
         if (entries->front()->id.index > _last_log_index + 1) {
+            // INSTRUMENT_BB
             done->status().set_error(EINVAL, "There's gap between first_index=%" PRId64
                                      " and last_log_index=%" PRId64,
                                      entries->front()->id.index, _last_log_index);
@@ -619,6 +623,7 @@ int LogManager::disk_thread(void* meta,
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void LogManager::set_snapshot(const SnapshotMeta* meta) {
     BRAFT_VLOG << "Set snapshot last_included_index="
               << meta->last_included_index()
@@ -656,6 +661,7 @@ void LogManager::set_snapshot(const SnapshotMeta* meta) {
     if (term == 0) {
         // last_included_index is larger than last_index
         // FIXME: what if last_included_index is less than first_index?
+        // INSTRUMENT_BB
         _virtual_first_log_id = _last_snapshot_id;
         truncate_prefix(meta->last_included_index() + 1, lck);
         return;
@@ -664,6 +670,7 @@ void LogManager::set_snapshot(const SnapshotMeta* meta) {
         // We don't truncate log before the latest snapshot immediately since
         // some log around last_snapshot_index is probably needed by some
         // followers
+        // INSTRUMENT_BB
         if (last_but_one_snapshot_id.index > 0) {
             // We have last snapshot index
             _virtual_first_log_id = last_but_one_snapshot_id;
@@ -679,6 +686,7 @@ void LogManager::set_snapshot(const SnapshotMeta* meta) {
     CHECK(false) << "Cannot reach here";
 }
 
+// INSTRUMENT_FUNC
 void LogManager::clear_bufferred_logs() {
     std::unique_lock<raft_mutex_t> lck(_mutex);
     if (_last_snapshot_id.index != 0) {
@@ -783,6 +791,7 @@ void LogManager::get_configuration(const int64_t index, ConfigurationEntry* conf
     return _config_manager->get(index, conf);
 }
 
+// INSTRUMENT_FUNC
 bool LogManager::check_and_set_configuration(ConfigurationEntry* current) {
     if (current == NULL) {
         CHECK(false) << "current should not be NULL";
@@ -869,6 +878,7 @@ LogManager::WaitId LogManager::notify_on_new_log(
     return wait_id;
 }
 
+// INSTRUMENT_FUNC
 int LogManager::remove_waiter(WaitId id) {
     WaitMeta* wm = NULL;
     {
@@ -885,6 +895,7 @@ int LogManager::remove_waiter(WaitId id) {
     return wm ? 0 : -1;
 }
 
+// INSTRUMENT_FUNC
 void LogManager::wakeup_all_waiter(std::unique_lock<raft_mutex_t>& lck) {
     if (_wait_map.empty()) {
         return;

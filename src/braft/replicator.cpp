@@ -757,6 +757,7 @@ void Replicator::_wait_more_entries() {
     CHECK_EQ(0, bthread_id_unlock(_id)) << "Fail to unlock " << _id;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_install_snapshot() {
     if (_reader) {
         // follower's readonly mode change may cause two install_snapshot
@@ -1021,6 +1022,7 @@ void Replicator::_on_catch_up_timedout(void* arg) {
             << "Fail to unlock" << id;
 }
 
+// INSTRUMENT_FUNC
 int Replicator::transfer_leadership(ReplicatorId id, int64_t log_index) {
     Replicator* r = NULL;
     bthread_id_t dummy = { id };
@@ -1032,6 +1034,7 @@ int Replicator::transfer_leadership(ReplicatorId id, int64_t log_index) {
     return r->_transfer_leadership(log_index);
 }
 
+// INSTRUMENT_FUNC
 int Replicator::stop_transfer_leadership(ReplicatorId id) {
     Replicator* r = NULL;
     bthread_id_t dummy = { id };
@@ -1058,6 +1061,7 @@ int Replicator::_transfer_leadership(int64_t log_index) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_cancel_append_entries_rpcs() {
     for (std::deque<FlyingAppendEntriesRpc>::iterator rpc_it =
         _append_entries_in_fly.begin();
@@ -1208,6 +1212,7 @@ int Replicator::change_readonly_config(ReplicatorId id, bool readonly) {
     return r->_change_readonly_config(readonly);
 }
 
+// INSTRUMENT_FUNC
 int Replicator::_change_readonly_config(bool readonly) {
     if ((readonly && _readonly_index != 0) ||
         (!readonly && _readonly_index == 0)) {
@@ -1245,6 +1250,7 @@ bool Replicator::readonly(ReplicatorId id) {
     return readonly;
 }
 
+// INSTRUMENT_FUNC
 void Replicator::_destroy() {
     bthread_id_t saved_id = _id;
     CHECK_EQ(0, bthread_id_unlock_and_destroy(saved_id));
@@ -1275,15 +1281,19 @@ void Replicator::_describe(std::ostream& os, bool use_html) {
     }
     switch (st.st) {
     case IDLE:
+        // INSTRUMENT_BB
         os << "idle";
         break;
     case BLOCKING:
+        // INSTRUMENT_BB
         os << "blocking";
         break;
     case APPENDING_ENTRIES:
+        // INSTRUMENT_BB
         os << "appending [" << st.first_log_index << ", " << st.last_log_index << ']';
         break;
     case INSTALLING_SNAPSHOT:
+        // INSTRUMENT_BB
         os << "installing snapshot {" << st.last_log_included
            << ", " << st.last_term_included  << '}';
         break;
@@ -1463,6 +1473,7 @@ int ReplicatorGroup::reset_election_timeout_interval(int new_interval_ms) {
     return 0;
 }
 
+// INSTRUMENT_FUNC
 int ReplicatorGroup::transfer_leadership_to(
         const PeerId& peer, int64_t log_index) {
     std::map<PeerId, ReplicatorIdAndStatus>::const_iterator iter = _rmap.find(peer);
@@ -1477,6 +1488,7 @@ int ReplicatorGroup::transfer_leadership_to(
     return Replicator::transfer_leadership(rid, log_index);
 }
 
+// INSTRUMENT_FUNC
 int ReplicatorGroup::stop_transfer_leadership(const PeerId& peer) {
     std::map<PeerId, ReplicatorIdAndStatus>::const_iterator iter = _rmap.find(peer);
     if (iter == _rmap.end()) {

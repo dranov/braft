@@ -318,6 +318,7 @@ void FSMCaller::do_committed(int64_t committed_index) {
     _log_manager->set_applied_id(last_applied_id);
 }
 
+// INSTRUMENT_FUNC
 int FSMCaller::on_snapshot_save(SaveSnapshotClosure* done) {
     ApplyTask task;
     task.type = SNAPSHOT_SAVE;

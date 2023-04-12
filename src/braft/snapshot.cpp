@@ -233,10 +233,12 @@ int64_t LocalSnapshotWriter::snapshot_index() {
     return _meta_table.has_meta() ? _meta_table.meta().last_included_index() : 0;
 }
 
+// INSTRUMENT_FUNC
 int LocalSnapshotWriter::remove_file(const std::string& filename) {
     return _meta_table.remove_file(filename);
 }
 
+// INSTRUMENT_FUNC
 int LocalSnapshotWriter::add_file(
         const std::string& filename, 
         const ::google::protobuf::Message* file_meta) {
@@ -470,6 +472,7 @@ int LocalSnapshotStorage::init() {
     // delete old snapshot
     DirReader* dir_reader = _fs->directory_reader(_path);
     if (!dir_reader->is_valid()) {
+        // INSTRUMENT_BB
         LOG(WARNING) << "directory reader failed, maybe NOEXIST or PERMISSION. path: " << _path;
         delete dir_reader;
         return EIO;
@@ -498,6 +501,7 @@ int LocalSnapshotStorage::init() {
             LOG(INFO) << "Deleting snapshot `" << snapshot_path << "'";
             // TODO: Notify Watcher before delete directories.
             if (!_fs->delete_file(snapshot_path, true)) {
+                // INSTRUMENT_BB
                 LOG(WARNING) << "delete old snapshot path failed, path " << snapshot_path;
                 return EIO;
             }
@@ -555,6 +559,7 @@ SnapshotWriter* LocalSnapshotStorage::create(bool from_empty) {
         // delete temp
         // TODO: Notify watcher before deleting
         if (_fs->path_exists(snapshot_path) && from_empty) {
+            // INSTRUMENT_BB
             if (destroy_snapshot(snapshot_path) != 0) {
                 break;
             }
